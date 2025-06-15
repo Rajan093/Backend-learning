@@ -53,6 +53,10 @@ const userSchema = new Schema(
     }
 )
 
+// 🔄 A hook is a function that runs automatically before/after a lifecycle event (like save, update, etc.)
+// In Mongoose: pre("save", ...) is a hook before saving
+// You can also create custom hooks by allowing others to inject behavior before/after your own functions
+
 userSchema.pre("save", async function (next) {
     if(!this.isModified("password")) return next();
 
@@ -78,6 +82,7 @@ userSchema.methods.generateAccessToken = function(){
         }
     )
 }
+
 userSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
@@ -92,3 +97,10 @@ userSchema.methods.generateRefreshToken = function(){
 }
 
 export const User = mongoose.model("User", userSchema);
+
+
+// ❗ Avoid arrow functions in Mongoose methods/hooks
+// Because `this` needs to refer to the current document (e.g., user)
+// Arrow functions don't have their own `this`; they inherit `this` from the outer (lexical) context.
+// ✅ Use arrow functions for shorter syntax and when you don't need your own `this`
+// ❌ Avoid them in Mongoose hooks/methods or any function where `this` should refer to the current object
