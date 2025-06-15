@@ -18,14 +18,14 @@ export const verifyJWT = asyncHandler(async(req, _, next) => {
         // 3. Then returns the decoded payload
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET)
 
-        
+
     
         const user = await User.findById(decodedToken?._id).select("-password -refreshToken")
     
         if (!user) {  
             throw new ApiError(401, "Invalid Access Token")
         }
-    
+        console.log(user)
         // adding user object in the req so that in logoutUser we can access user data
         req.user = user;
         next()
